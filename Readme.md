@@ -11,6 +11,18 @@
 * Need to run tests as root ( sudo )
 * Need to make sure mongodb is running ( no service with community mongodb )
 
+* secrets file
+
+```
+module.exports = {
+    'google_account_password' : '<password>',
+    'cookie_secret':'<cookiesecret>',
+    'password_generator_list' : [
+      '<possiblepasswordfragment>'
+    ]
+  }
+```
+
 # Model
 These are the logical groupings for models/collections 
 * User Login info
