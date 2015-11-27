@@ -36,7 +36,9 @@ require('./config/passport')(passport);
 //include routes
 //var routes = require('./routes/index')(app,passport,secrets);
 var routes = require('./routes/index')(app,
-				       {userLoginType:'local'});
+				       {userLoginType:'local',
+					scoreType:'challenge'
+				       });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
