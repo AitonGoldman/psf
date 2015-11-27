@@ -22,7 +22,7 @@ describe('ChallengeScore', function() {
     var good_score = new ChallengeScore({/*winnerId: fake_user_1,*/
 	machinePlayerdOnId: '1234',
 	challenge: false,
-	season: 'pre-season',
+	seasonOrRound: 'pre-season',
 	scorePlayers: [{
 	    playerName: "poop",
 	    wins: 10,

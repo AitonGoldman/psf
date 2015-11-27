@@ -12,7 +12,7 @@ var ScorePlayer = new mongoose.Schema({
 
 var ChallengeScoreSchema = new mongoose.Schema({
     dateOfScore: {type: Date, default: Date.now },
-    season: {type: String, required: true},
+    seasonOrRound: {type: String, required: true},
     winnerId: {type: ObjectId, required: true},
     machinePlayedOnId: {type: String},
     challenge: {type: Boolean, required: true}, 
