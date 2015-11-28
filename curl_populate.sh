@@ -1,1 +1,8 @@
-curl -H "Content-Type: application/json" -X POST -d '{"local":{"email":"me@me.com","password":"hithere","username":"mememe"}, "region":"pittsburgh","displayName":"mydisplay"}' http://localhost:3000/user
+mongo psf challenge-drop.js
+export USER_1=`curl -H "Content-Type: application/json" -X POST -d '{"local":{"email":"me@me.com","password":"hithere","username":"mememe"}, "region":"pittsburgh","displayName":"mydisplay"}' http://localhost:3000/user | grep -Eo "[^:]+"| grep -Eo "[^\"]+" | grep -v "\{\|\}\|result"`
+export USER_2=`curl -H "Content-Type: application/json" -X POST -d '{"local":{"email":"me2@me.com","password":"hithere2","username":"mememe2"}, "region":"pittsburgh","displayName":"mydisplay2"}' http://localhost:3000/user| grep -Eo "[^:]+"| grep -Eo "[^\"]+" | grep -v "\{\|\}\|result"`
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_1'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_1'","playerName":"aiton","wins":"10","losses":"11","points":"123"},{"playerId":"'$USER_2'","playerName":"aiton2","wins":"110","losses":"111","points":"321"}]}' http://localhost:3000/score
+sleep 5
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_1'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_1'","playerName":"aiton","wins":"11","losses":"11","points":"124"},{"playerId":"'$USER_2'","playerName":"aiton2","wins":"110","losses":"112","points":"320"}]}' http://localhost:3000/score
+sleep 5
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_1'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_1'","playerName":"aiton","wins":"12","losses":"11","points":"125"},{"playerId":"'$USER_2'","playerName":"aiton2","wins":"110","losses":"113","points":"319"}]}' http://localhost:3000/score
