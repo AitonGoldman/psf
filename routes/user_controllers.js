@@ -24,7 +24,7 @@ module.exports = function(login_type){
 					     })
 			return false
 		    }
-		    res.json({result:true});
+		    res.json({result:user._id});
 		    return true
 		})
 	    }
