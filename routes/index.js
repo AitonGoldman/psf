@@ -13,7 +13,7 @@ module.exports = function(app, app_configuration){
     var score_controllers = require('./score_controllers')(app_configuration.scoreType)
 
     router.post('/user', user_controllers.addUser);
-    router.post('/score', user_controllers.addUser);
+    router.post('/score', score_controllers.addScore);
     router.get('/test',function(req,res,next){
 	query = ChallengeUserLogin.find().distinct('displayName', function(err,data){
 	    ChallengeUserLogin.find().in('displayName',data).sort('displayName').limit(data.length).exec(function(err,data){

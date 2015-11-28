@@ -1,15 +1,16 @@
 
 function outputValidationError(err){
-    error_message = "VALIDATION ERROR WHILE CREATING NEW USER : "
+    error_message = "VALIDATION ERROR WHILE CREATING NEW SCORE : "
     for(i in err.errors){
 	error_message = error_message + ('**'+i+"--"+err.errors[i].name+"--"+err.errors[i].message)
     }
     return error_message
 }
+
 module.exports = function(score_type){
     var mongoose = require('mongoose');
     require('../models/ChallengeScore');
-    var ChallengScore = mongoose.model('ChallengeScore');
+    var ChallengeScore = mongoose.model('ChallengeScore');
     controllers = {};
     if(score_type == 'challenge'){
 	controllers = {

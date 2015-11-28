@@ -34,7 +34,6 @@ app.use(passport.session()); // persistent login sessions
 require('./config/passport')(passport);
 
 //include routes
-//var routes = require('./routes/index')(app,passport,secrets);
 var routes = require('./routes/index')(app,
 				       {userLoginType:'local',
 					scoreType:'challenge'
