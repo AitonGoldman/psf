@@ -23,7 +23,8 @@ module.exports = function(score_type){
 					     })
 			return false
 		    }
-		    res.json({result:true});
+		    res.json({result:true,
+			     error:err});
 		    return true
 		})
 	    }
