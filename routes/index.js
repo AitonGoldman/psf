@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var express = require('express');
 require('../models/ChallengeUserLogin');
+require('../models/ChallengeScore');
 
 var ChallengeUserLogin = mongoose.model('ChallengeUserLogin');    
 var ChallengeScore = mongoose.model('ChallengeScore');    
@@ -8,6 +9,19 @@ var ChallengeScore = mongoose.model('ChallengeScore');
 var ObjectId = require('mongoose').Types.ObjectId; 
 
 var router = express.Router();
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+	return next();
+    // if they aren't redirect them to the home page
+    res.status(400).send({result: false,
+			  error: "oh shit"
+			 })
+    return false
+}
+
 
 module.exports = function(app, app_configuration){
     var express = require('express');
