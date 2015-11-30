@@ -60,7 +60,9 @@ describe('ChallengeUserLogin Controller', function() {
 	     	//When you hit this, you will see a timeout error in the results
 		//THIS MEANS SOMETHING WENT WRONG
 	    },function(data){
+//		console.log(response._getData());
 	     	response._getStatusCode().should.equal(400);		
+		response._getData().error.should.equal('VALIDATION ERROR WHILE PERFORMING USER OPERATION : **local.email--ValidatorError--Path `email` (``) is shorter than the minimum allowed length (2).')
    		done();
 	    })
 	});
@@ -89,7 +91,9 @@ describe('ChallengeUserLogin Controller', function() {
 	     	//When you hit this, you will see a timeout error in the results
 		//THIS MEANS SOMETHING WENT WRONG
 	    },function(data){
+//		console.log(response._getData());
 	     	response._getStatusCode().should.equal(400);		
+		response._getData().error.should.equal('VALIDATION ERROR WHILE PERFORMING USER OPERATION : **displayName--ValidatorError--Path `displayName` is required.')
    		done();
 	    })
 	});
@@ -127,7 +131,9 @@ describe('ChallengeUserLogin Controller', function() {
 	     	//When you hit this, you will see a timeout error in the results
 		//THIS MEANS SOMETHING WENT WRONG
 	    },function(data){
+//		console.log(response._getData());
 	     	response._getStatusCode().should.equal(400)		
+		response._getData().error.should.equal('VALIDATION ERROR WHILE PERFORMING USER OPERATION : **displayName--ValidatorError--Path `displayName` (`me_display1234567889012345678890123456788901234567889012345678890`) is longer than the maximum allowed length (25).**local.username--ValidatorError--Path `username` (`me1234567889012345678890123456788901234567889012345678890`) is longer than the maximum allowed length (25).**local.email--ValidatorError--Path `email` is invalid (meme.com).')
 	     	done()
 	    })
 	});
