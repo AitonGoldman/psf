@@ -39,10 +39,9 @@ These are the logical groupings for models/collections
 * PUT - updating email
 ## /user/displayname
 * PUT - updating displayname
-
 ## /score
 * POST - add a score
-
+* GET - get most recent score for player
 
 # REST - /user
 ## returned json
@@ -54,8 +53,6 @@ These are the logical groupings for models/collections
 ** user_info_match_results
 *** wins (calculate)
 *** losses (calculate)
-*** rank (calculate)
-*** matches played (calculate)
 *** points (or record in score info?)
 ** badges
 ** settings
