@@ -7,10 +7,18 @@ function outputValidationError(err){
     return error_message
 }
 
+function report_general_error(type_of_error,error, res){
+    res.status(400).send({result: false,
+			  error: type_of_error+' : '+error 
+			 })
+    return true
+}
+
 module.exports = function(score_type){
     var mongoose = require('mongoose');
     require('../models/ChallengeScore');
     var ChallengeScore = mongoose.model('ChallengeScore');
+    var ObjectId = require('mongoose').Types.ObjectId; 
     controllers = {};
     if(score_type == 'challenge'){
 	controllers = {
@@ -24,9 +32,38 @@ module.exports = function(score_type){
 			return false
 		    }
 		    res.json({result:true,
-			     error:err});
+			      error:err});
 		    return true
 		})
+	    },
+	    getScores: function(req,res,next){
+	    		return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid)).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+			    if(err){
+				report_general_error("Query Error","Invalid player id", res) 
+				return false;
+			    }
+			    return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid2)).sort('-dateOfScore').limit(1).exec(function(err,latest_score2){
+				if(err){
+				    report_general_error("Query Error","Invalid player id", res) 
+				    return false;
+				}
+				res.json({result:{score1:latest_score[0],
+						  score2:latest_score2[0]},
+					  error:err});
+				return true
+			    })
+			})
+	    },
+	    getScore: function(req,res,next){
+	    		return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid)).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+			    if(err){
+				report_general_error("Query Error","Invalid player id", res) 
+				return false;
+			    }
+			    res.json({result:latest_score[0],
+				      error:err});
+			    return true
+			})
 	    }
 	}
     }

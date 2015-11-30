@@ -33,6 +33,8 @@ module.exports = function(app, app_configuration){
     router.put('/user/:userid/email', user_controllers.updateUserEmail);
     router.put('/user/:userid/displayname', user_controllers.updateUserDisplayName);
     router.post('/score', score_controllers.addScore);
+    router.get('/scores/:userid/:userid2', score_controllers.getScores);
+    router.get('/score/:userid', score_controllers.getScore);
     router.get('/user/:userid', user_controllers.getUserInfo);
     router.get('/test/:userid',function(req,res,next){
 	//console.log(req.params.userid)
