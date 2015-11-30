@@ -1,5 +1,5 @@
 #Keep track of
-* Shit - for Mockgoose, need to
+* Shit - for Mockgoose, need to do the following (or just install ubuntu 14)
 ** need to git clone mongodb-download - modify it to allow for ubuntu 15
 ** need to git clone mongodb-prebuilt and make it use our modified mongodb-download
 ** need to git clone mockgoose and make it use our modified mongodb-prebuilt
@@ -23,41 +23,29 @@ module.exports = {
   }
 ```
 
-# Model
+# Model - overview
 These are the logical groupings for models/collections 
-* User Login info
+* User Login info - done
 * User Statistics/Info/Settings
-* Score
+* Score - done
 * Machine List
 * Objects shared between two people (i.e. challenge list)
 
-## Score - done
-* design model
-** score date
-** winner_id
-** machine played on
-*** sub doc - player_id
-*** sub doc - player_name
-*** sub doc - win/lose
-*** sub doc - losses (after match)
-*** sub doc - wins (after match)
-*** sub doc - player points ( after match )
+# REST
+## /user
+* POST - create new user - done
+* GET - get logged in user info - need score model
+## /user/email
+* PUT - updating email
+## /user/displayname
+* PUT - updating displayname
 
-## User Login Info Model
-* Use passport login model - done
-* Add validators on model - done
-* Add mocha tests on model - done
-* Add mocked tests on model - done
-* Add controller tests - done
+## /score
+* POST - add a score
 
-## REST for user
-* create new user - done
-* get user info - see User Statistics/Info/Settings
-* get list of users (with limited info)
 
-## REST User Statistics/Info/Settings
-* save new user - done
-* get user info
+# REST - /user
+## returned json
 ** login_info
 *** login name 
 *** display name
