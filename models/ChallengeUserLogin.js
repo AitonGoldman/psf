@@ -12,22 +12,25 @@ function validateEmail(email) {
     return email_re.test(email);
 }
 
+var ChallengeUserLocalSchema = new mongoose.Schema({
+    email        : { type: String,
+		     lowercase: true,
+		     match: email_re,
+		     minlength: 2 
+		   },
+    password     : { type: String,
+		     required: true
+		   },
+    username     : {type: String,
+		    required: true,
+		    lowercase: true,
+		    maxlength: 25,
+		    minlength: 1
+		   }
+})
+
 var ChallengeUserLoginSchema = new mongoose.Schema({
-    local            : {
-	email        : { type: String,
-			 lowercase: true,
-			 match: email_re
-		       },
-	password     : { type: String,
-			 required: true
-		       },
-	username     : {type: String,
-			required: true,
-			lowercase: true,
-			maxlength: 25,
-			minlength: 1
-		       }
-    },
+    local            : ChallengeUserLocalSchema,
     facebook         : {
 	id           : String,
 	token        : String,
@@ -63,5 +66,11 @@ ChallengeUserLoginSchema.methods.generateHash = function(password) {
 ChallengeUserLoginSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.local.password);
 };
+
+ChallengeUserLoginSchema.virtual('wins').set(function (){
+})
+
+ChallengeUserLoginSchema.virtual('wins').get(function (){
+})
 
 mongoose.model('ChallengeUserLogin', ChallengeUserLoginSchema);
