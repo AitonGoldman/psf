@@ -1,0 +1,7 @@
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_ID'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_ID'","playerName":"aiton","wins":"3333","losses":"3333","points":"3333"},{"playerId":"'$USER_ID2'","playerName":"aiton2","wins":"4444","losses":"4444","points":"4444"}]}' http://localhost:3000/score
+sleep 2
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_ID'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_ID'","playerName":"aiton","wins":"5555","losses":"5555","points":"5555"},{"playerId":"'$USER_ID4'","playerName":"aiton2","wins":"0000","losses":"0000","points":"0000"}]}' http://localhost:3000/score
+sleep 2
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_ID'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_ID'","playerName":"aiton","wins":"99","losses":"99","points":"99"},{"playerId":"'$USER_ID3'","playerName":"aiton2","wins":"888","losses":"888","points":"888"}]}' http://localhost:3000/score
+sleep 2
+curl -H "Content-Type: application/json" -X POST -d '{"seasonOrRound":"pre-season","winnerId":"'$USER_ID2'","machinePlayedOnId":"12345","challenge":"false","scorePlayers":[{"playerId":"'$USER_ID4'","playerName":"aiton3","wins":"111","losses":"111","points":"111"},{"playerId":"'$USER_ID2'","playerName":"aiton2","wins":"666","losses":"666","points":"666"}]}' http://localhost:3000/score
