@@ -80,7 +80,8 @@ module.exports = function(login_type){
 			delete plain_user.local.password;
 
 			plain_user.wins = latest_score[0].scorePlayers[latest_score_player_index].wins + 1
-			res.json({result:plain_user})
+			res.json({result:plain_user,
+				 error:err})
 		    })
 		})
 
@@ -93,7 +94,8 @@ module.exports = function(login_type){
 		    if(report_mongo_error(err, res)){
 			return false
 		    }
-		    res.json({result:user._id});
+		    res.json({result:user._id,
+			     error:err});
 		    return true
 		})
 	    }
