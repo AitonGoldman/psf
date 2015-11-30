@@ -15,7 +15,7 @@ var ChallengeScore = mongoose.model('ChallengeScore');
 var ChallengeUserLogin = mongoose.model('ChallengeUserLogin');
 
 
-describe('ChallengeScore', function() {
+describe('ChallengeScore Model', function() {
     var fake_user_1
     var fake_user_2
 

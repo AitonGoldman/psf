@@ -12,26 +12,97 @@ var httpMocks = require('node-mocks-http');
 
 var user_controllers = require('../routes/user_controllers')('local')
 
+var add_good_user_request  = httpMocks.createRequest({
+    method: 'POST',
+    url: '/user',
+    body: {
+	local: { email: 'me@me.com',
+		 username: 'me',
+		 password: 'me_pass'
+	       },
+	displayName: 'me_display'
+    }
+});
+
 describe('ChallengeUserLogin Controller', function() {
+    var good_user_id;
+    describe('editing a user', function () {
+	beforeEach(function(done) {
+	    mockgoose.reset();
+	    var response = httpMocks.createResponse();
+	    user_controllers.addUser(add_good_user_request, response).then(function(data){		
+	     	good_user_id=JSON.parse(response._getData()).result
+	     	done()
+	    })
+	})
+	it('edit user email', function (done) {
+	    var response = httpMocks.createResponse();
+	    var request  = httpMocks.createRequest({
+		method: 'PUT',
+		url: '/user/'+good_user_id+'/email',
+		body: { email: 'me@me.com' }
+	    });	    
+	    user_controllers.updateUserEmail(request, response).then(function(data){		
+	     	response._getStatusCode().should.equal(200);		
+	     	done();
+	    },function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    })
+	});
+	it('edit user email with no email', function (done) {
+	    var response = httpMocks.createResponse();
+	    var request  = httpMocks.createRequest({
+		method: 'PUT',
+		url: '/user/'+good_user_id+'/email'
+	    });	    
+	    user_controllers.updateUserEmail(request, response).then(function(data){		
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    },function(data){
+	     	response._getStatusCode().should.equal(400);		
+   		done();
+	    })
+	});
+	it('edit user display name', function (done) {
+	    var response = httpMocks.createResponse();
+	    var request  = httpMocks.createRequest({
+		method: 'PUT',
+		url: '/user/'+good_user_id+'/displayname',
+		body: { displayName: 'testDisplayName' }
+	    });	    
+	    user_controllers.updateUserDisplayName(request, response).then(function(data){		
+	     	response._getStatusCode().should.equal(200);		
+	     	done();
+	    },function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    })
+	});
+	it('edit user displayname with no displayname', function (done) {
+	    var response = httpMocks.createResponse();
+	    var request  = httpMocks.createRequest({
+		method: 'PUT',
+		url: '/user/'+good_user_id+'/displayname'
+	    });	    
+	    user_controllers.updateUserDisplayName(request, response).then(function(data){		
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    },function(data){
+	     	response._getStatusCode().should.equal(400);		
+   		done();
+	    })
+	});
+    });
     describe('adding a user', function () {
 	beforeEach(function(done) {
 	    mockgoose.reset();
 	    done();
 	})
 	it('add valid user', function (done) {
-	    var request  = httpMocks.createRequest({
-		method: 'POST',
-		url: '/user',
-		body: {
-		    local: { email: 'me@me.com',
-			     username: 'me',
-			     password: 'me_pass'
-			   },
-		    displayName: 'me_display'
-		}
-	    });
+
 	    var response = httpMocks.createResponse();
-	    user_controllers.addUser(request, response).then(function(data){		
+	    user_controllers.addUser(add_good_user_request, response).then(function(data){		
 	     	response._getStatusCode().should.equal(200)		
 	     	done()
 	    },function(data){
