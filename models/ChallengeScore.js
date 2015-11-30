@@ -7,7 +7,8 @@ var ScorePlayer = new mongoose.Schema({
     playerName: {type: String, required: true},
     wins: {type: Number},
     losses: {type: Number},
-    points: {type: Number}
+    points: {type: Number},
+    gamesPlayed: {type: Number}
 })
 
 var ChallengeScoreSchema = new mongoose.Schema({
