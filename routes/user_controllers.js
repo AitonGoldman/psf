@@ -72,15 +72,21 @@ module.exports = function(login_type){
 		    return ChallengeUserLogin.findOne({_id:new ObjectId(req.params.userid)}, function(err,user){
 			var latest_score_player_index = -1;
 			if(latest_score[0].scorePlayers[0].playerId == user._id){
-			    latest_score_player_index = 0
+			    latest_score_player_index = 0;
 			} else {
-			    latest_score_player_index = 1
+			    latest_score_player_index = 1;
 			}
-			plain_user = user.toObject()
+			plain_user = user.toObject();
 			delete plain_user.local.password;
-
-			plain_user.wins = latest_score[0].scorePlayers[latest_score_player_index].wins + 1
-			res.json({result:plain_user,
+			calculated_info = {wins:0,losses:0,points:0};
+			calculated_info.wins = latest_score[0].scorePlayers[latest_score_player_index].wins;
+			calculated_info.losses = latest_score[0].scorePlayers[latest_score_player_index].losses;
+			calculated_info.points = latest_score[0].scorePlayers[latest_score_player_index].points;
+			res.json({result:{login_info:plain_user,
+					  calculated_info:calculated_info,
+					  badges:[],
+					  settings:{}
+					 },
 				 error:err})
 		    })
 		})
