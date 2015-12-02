@@ -36,34 +36,70 @@ module.exports = function(score_type){
 		    return true
 		})
 	    },
-	    getScores: function(req,res,next){
-	    		return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid)).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
-			    if(err){
-				report_general_error("Query Error","Invalid player id", res) 
-				return false;
-			    }
-			    return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid2)).sort('-dateOfScore').limit(1).exec(function(err,latest_score2){
-				if(err){
-				    report_general_error("Query Error","Invalid player id", res) 
-				    return false;
-				}
-				res.json({result:{score1:latest_score[0],
-						  score2:latest_score2[0]},
-					  error:err});
-				return true
-			    })
-			})
+	    getScoreForTwoPlayers: function(req,res,next){
+		var useridobj;
+		var useridobj2;
+
+		try {
+		    useridobj = new ObjectId(req.params.userid);
+		    useridobj2 = new ObjectId(req.params.userid2);
+		} catch(err){
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    
+		}
+
+	    	return ChallengeScore.find().where('scorePlayers.playerId').in(useridobj).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+		    if(err){
+			report_general_error("Query Error",err, res) 
+			return false;
+		    }
+		    return ChallengeScore.find().where('scorePlayers.playerId').in(useridobj2).sort('-dateOfScore').limit(1).exec(function(err,latest_score2){
+			if(err){
+			    report_general_error("Query Error",err, res) 
+			    return false;
+			}
+			res.json({result:{score1:latest_score[0],
+					  score2:latest_score2[0]},
+				  error:err});
+			return true
+		    })
+		})
 	    },
 	    getScore: function(req,res,next){
-	    		return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid)).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
-			    if(err){
-				report_general_error("Query Error","Invalid player id", res) 
-				return false;
-			    }
-			    res.json({result:latest_score[0],
-				      error:err});
-			    return true
-			})
+		var useridobj;
+		try { 
+		    useridobj = new ObjectId(req.params.userid)
+		} catch(err){
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    		    
+		}
+	    	return ChallengeScore.find().where('scorePlayers.playerId').in(useridobj).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+		    if(err){
+			report_general_error("Query Error","Invalid player id", res) 
+			return false;
+		    }
+		    res.json({result:latest_score[0],
+			      error:err});
+		    return true
+		})
+	    },
+	    getScores: function(req,res,next){
+		var useridobj;
+		try { 
+		    useridobj = new ObjectId(req.params.userid)
+		} catch(err){
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    	   
+		}
+	    	return ChallengeScore.find().where('scorePlayers.playerId').in(useridobj).sort('-dateOfScore').exec(function(err,latest_score){
+		    if(err){
+			report_general_error("Query Error","Invalid player id", res) 
+			return false;
+		    }
+		    res.json({result:latest_score,
+			      error:err});
+		    return true
+		})
 	    }
 	}
     }
