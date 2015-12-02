@@ -32,65 +32,111 @@ module.exports = function(login_type){
     var ChallengeScore = mongoose.model('ChallengeScore');    
     var ObjectId = require('mongoose').Types.ObjectId; 
 
+
     controllers = {};
     if(login_type == 'local'){
 	controllers = {
 	    updateUserEmail: function(req,res,next){		
+		var userid;
+		try{
+		    var userid = new ObjectId(req.params.userid)
+		}catch(err){
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    	   
+		}
 		new_email = req.body.email;
 		if(new_email === undefined){
-		    new_email='';
+		    report_general_error("Invalid Parameter","Invalid email",res)
+		    return Promise.reject({})
 		}
-		return ChallengeUserLogin.update({_id:req.params.userid},{'local.email':new_email},{runValidators: true}).exec(function(err){
-		    if(report_mongo_error(err, res)){
-			return false
-		    }
-		    res.json({result:true,
-			     error:err});
-		    return true;
-		})
-	    },
-	    updateUserDisplayName: function(req,res,next){
-		new_displayname = req.body.displayName;
-		if(new_displayname === undefined){
-		    new_displayname='';
-		}
-		return ChallengeUserLogin.update({_id:req.params.userid},{'displayName':new_displayname}, {runValidators: true}).exec(function(err){
+		return ChallengeUserLogin.update({_id:userid},{'local.email':new_email},{runValidators: true}).exec(function(err, data){
 		    if(report_mongo_error(err, res)){
 			return false
 		    }
 
-		    res.json({result:true,
-			     error: err});
-		    return true;
+		    if(data.n > 0){
+		     	res.json({result:true,
+		      		  error: err});
+		     	return true;
+		    } else {
+		     	report_general_error("DB error","No docs changed",res)
+		     	return false
+		    }
 		})
 	    },
-	    getUserInfo: function(req,res,next){
-		return ChallengeScore.find().where('scorePlayers.playerId').in(new ObjectId(req.params.userid)).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+	    updateUserDisplayName: function(req,res,next){
+		var userid;
+		try{
+		    var userid = new ObjectId(req.params.userid)
+		}catch(err){
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    	   
+		}
+		new_displayname = req.body.displayName;
+		if(new_displayname === undefined){
+		    report_general_error("Invalid Parameter","Invalid display name",res)
+		    return Promise.reject({})
+		}
+		return ChallengeUserLogin.update({_id:userid},{'displayName':new_displayname}, {runValidators: true}).exec(function(err, data){
 		    if(report_mongo_error(err, res)){
-			return false
+		      	return false
+		     }
+
+		    if(data.n > 0){
+		     	res.json({result:true,
+		      		  error: err});
+		     	return true;
+		     } else {
+		     	report_general_error("DB error","No docs changed",res)
+		     	return false
+		     }
+		});
+	    },
+	    getUserInfo: function(req,res,next){
+		//fixme : pull our objectid creation
+		var userid;
+		try{
+		    var userid = new ObjectId(req.params.userid)
+		}catch(err){
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    	   
+		}
+		return ChallengeScore.find().where('scorePlayers.playerId').in(userid).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+		    if(err){
+			report_general_error("DB error",err,res)
+			return Promise.reject({})
 		    }
-		    return ChallengeUserLogin.findOne({_id:new ObjectId(req.params.userid)}, function(err,user){
+		    
+//		    if(latest_score.length == 0){
+		    
+		    return ChallengeUserLogin.findOne({_id:userid}, function(err,user){
 			var latest_score_player_index = -1;
-			if(latest_score[0].scorePlayers[0].playerId == user._id){
-			    latest_score_player_index = 0;
-			} else {
-			    latest_score_player_index = 1;
+			//fixme : need to handle empty results better ( i.e. no matches played yet )
+			if(user == null){
+			    report_general_error("Invalid Parameter","Invalid userid",res)
+			    return false		    	   
 			}
 			plain_user = user.toObject();
 			delete plain_user.local.password;
 			calculated_info = {wins:0,losses:0,points:0};
-			calculated_info.wins = latest_score[0].scorePlayers[latest_score_player_index].wins;
-			calculated_info.losses = latest_score[0].scorePlayers[latest_score_player_index].losses;
-			calculated_info.points = latest_score[0].scorePlayers[latest_score_player_index].points;
+			if(latest_score.length > 0){			
+			    if(latest_score[0].scorePlayers[0].playerId == user._id){
+				latest_score_player_index = 0;
+			    } else {
+				latest_score_player_index = 1;
+			    }
+			    calculated_info.wins = latest_score[0].scorePlayers[latest_score_player_index].wins;
+			    calculated_info.losses = latest_score[0].scorePlayers[latest_score_player_index].losses;
+			    calculated_info.points = latest_score[0].scorePlayers[latest_score_player_index].points;
+			}
 			res.json({result:{login_info:plain_user,
 					  calculated_info:calculated_info,
 					  badges:[],
 					  settings:{}
 					 },
-				 error:err})
+				  error:err})
 		    })
 		})
-
 	    },
 	    addUser: function(req,res,next){
 		var challengeuserlogin = new ChallengeUserLogin(req.body);
