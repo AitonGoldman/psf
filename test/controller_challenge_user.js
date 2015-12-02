@@ -40,9 +40,11 @@ describe('ChallengeUserLogin Controller', function() {
 	    var request  = httpMocks.createRequest({
 		method: 'PUT',
 		url: '/user/'+good_user_id+'/email',
-		body: { email: 'me@me.com' }
+		body: { email: 'me@me.com' },
+		params: {userid: good_user_id}
 	    });	    
-	    user_controllers.updateUserEmail(request, response).then(function(data){		
+	    user_controllers.updateUserEmail(request, response).then(function(err){		
+		console.log(err);
 	     	response._getStatusCode().should.equal(200);		
 	     	done();
 	    },function(data){
@@ -54,15 +56,16 @@ describe('ChallengeUserLogin Controller', function() {
 	    var response = httpMocks.createResponse();
 	    var request  = httpMocks.createRequest({
 		method: 'PUT',
-		url: '/user/'+good_user_id+'/email'
+		url: '/user/'+good_user_id+'/email',
+		body: { email: ''},
+		params: {userid: good_user_id}
 	    });	    
 	    user_controllers.updateUserEmail(request, response).then(function(data){		
 	     	//When you hit this, you will see a timeout error in the results
 		//THIS MEANS SOMETHING WENT WRONG
 	    },function(data){
-//		console.log(response._getData());
 	     	response._getStatusCode().should.equal(400);		
-		response._getData().error.should.equal('VALIDATION ERROR WHILE PERFORMING USER OPERATION : **local.email--ValidatorError--Path `email` (``) is shorter than the minimum allowed length (2).')
+		response._getData().error.should.equal('VALIDATION ERROR WHILE PERFORMING USER OPERATION : **local.email--ValidatorError--Path `email` (``) is shorter than the minimum allowed length (2).');
    		done();
 	    })
 	});
@@ -71,7 +74,8 @@ describe('ChallengeUserLogin Controller', function() {
 	    var request  = httpMocks.createRequest({
 		method: 'PUT',
 		url: '/user/'+good_user_id+'/displayname',
-		body: { displayName: 'testDisplayName' }
+		body: { displayName: 'testDisplayName' },
+		params: {userid: good_user_id}
 	    });	    
 	    user_controllers.updateUserDisplayName(request, response).then(function(data){		
 	     	response._getStatusCode().should.equal(200);		
@@ -85,14 +89,15 @@ describe('ChallengeUserLogin Controller', function() {
 	    var response = httpMocks.createResponse();
 	    var request  = httpMocks.createRequest({
 		method: 'PUT',
-		url: '/user/'+good_user_id+'/displayname'
+		url: '/user/'+good_user_id+'/displayname',
+		body: { displayName: ''},
+		params: {userid: good_user_id}
 	    });	    
 	    user_controllers.updateUserDisplayName(request, response).then(function(data){		
 	     	//When you hit this, you will see a timeout error in the results
 		//THIS MEANS SOMETHING WENT WRONG
 	    },function(data){
-//		console.log(response._getData());
-	     	response._getStatusCode().should.equal(400);		
+	     	response._getStatusCode().should.equal(400);				
 		response._getData().error.should.equal('VALIDATION ERROR WHILE PERFORMING USER OPERATION : **displayName--ValidatorError--Path `displayName` is required.')
    		done();
 	    })
