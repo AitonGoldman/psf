@@ -34,14 +34,32 @@ These are the logical groupings for models/collections
 # REST
 ## /user
 * POST - create new user - done
-* GET - get logged in user info - need score model
-## /user/email
+## /user/<userid>
+* GET - get logged in user info 
+## /user/<userid>/email
 * PUT - updating email
-## /user/displayname
+## /user/<userid>/displayname
 * PUT - updating displayname
 ## /score
 * POST - add a score
+## /score/<userid>
 * GET - get most recent score for player
+## /scores/<userid>
+* GET - get all scores for player
+## /score/<userid>/<userid>
+* GET - get most recent score for 2 players
+
+Todo
+----
+* add tests for all rest calls
+* login
+* change scores to allow for challenges
+* get list of challenges
+* update match - set challenge bit and/or winner
+* authorization needed for certain REST calls
+* add ability for both players to "approve" match
+* badges
+* settings
 
 # REST - /user
 ## returned json
