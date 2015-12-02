@@ -68,12 +68,12 @@ describe('ChallengeScore Model', function() {
 	    fake_user_1 = user._id;
 	    good_score.winnerId=fake_user_1;
 	    good_score.scorePlayers[0].playerId=fake_user_1;
-	    good_score.scorePlayers[1].playerId=fake_user_1;
 	    bad_score.winnerId='notreal';
 	    bad_score.scorePlayers[0].playerId='notreal';
 	    bad_score.scorePlayers[1].playerId='notreal';
 	    challengeuserlogin2.save(function(err,user){	    
 		fake_user_2 = user._id;
+		good_score.scorePlayers[1].playerId=fake_user_2;
 		done();
 	    })	    
 	})
