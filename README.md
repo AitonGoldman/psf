@@ -61,16 +61,3 @@ Todo
 * badges
 * settings
 
-# REST - /user
-## returned json
-** login_info
-*** login name 
-*** display name
-*** email address
-*** region
-** user_info_match_results
-*** wins (calculate)
-*** losses (calculate)
-*** points (or record in score info?)
-** badges
-** settings

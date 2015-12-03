@@ -38,6 +38,9 @@ module.exports = function(login_type){
 	controllers = {
 	    updateUserEmail: function(req,res,next){		
 		var userid;
+		if(req.params.userid === undefined){
+		    req.params.userid='poop';
+		}
 		try{
 		    var userid = new ObjectId(req.params.userid)
 		}catch(err){
@@ -66,6 +69,9 @@ module.exports = function(login_type){
 	    },
 	    updateUserDisplayName: function(req,res,next){
 		var userid;
+		if(req.params.userid === undefined){
+		    req.params.userid='poop';
+		}
 		try{
 		    var userid = new ObjectId(req.params.userid)
 		}catch(err){
@@ -95,6 +101,9 @@ module.exports = function(login_type){
 	    getUserInfo: function(req,res,next){
 		//fixme : pull our objectid creation
 		var userid;
+		if(req.params.userid === undefined){
+		    req.params.userid='poop';
+		}
 		try{
 		    var userid = new ObjectId(req.params.userid)
 		}catch(err){

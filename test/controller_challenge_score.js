@@ -13,37 +13,144 @@ var httpMocks = require('node-mocks-http');
 var score_controllers = require('../routes/score_controllers')('challenge')
 
 describe('ChallengeScore Controller', function() {
+    var userid1='565b7469de0bc8c40a5a62f6'
+    var userid2='565b7469de0bc8c40a5a6fff'
+    var create_good_score_request  = httpMocks.createRequest({
+	method: 'POST',
+	url: '/score',
+	body: {
+	    seasonOrRound: 'preSeason',
+	    winnerId: userid1,
+	    machinePlayedOnId: '12345',
+	    challenge: false,
+	    scorePlayers: [{
+		playerId: userid1,
+		playerName: 'aiton goldman',
+		wins: 11,
+		losses: 12,
+		points: 123
+	    },{
+		playerId: userid2,
+		playerName: 'aiton goldman2',
+		wins: 12,
+		losses: 13,
+		points: 1234
+	    }]
+	}
+    });
+
+    describe('getting scores', function () {
+    	beforeEach(function(done) {
+	    mockgoose.reset();
+	    var response = httpMocks.createResponse();
+	    score_controllers.addScore(create_good_score_request, response).then(function(data){		
+		score_controllers.addScore(create_good_score_request, response).then(function(data){		
+		    done();	
+		})	
+	    })
+	})
+	it('get individual latest score', function (done) {
+	    var request  = httpMocks.createRequest({
+		method: 'get',
+		url: '/score/'+userid1,
+		params: {userid: userid1}
+	    })
+	    var response = httpMocks.createResponse();
+	    score_controllers.getScore(request, response).then(function(data){
+		JSON.parse(response._getData()).result.scorePlayers[0].wins.should.equal(11);
+	     	response._getStatusCode().should.equal(200)		
+		done();
+	    }, function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    })			    
+	})
+	it('get latest score with bad userid', function (done) {
+	    var request  = httpMocks.createRequest({
+		method: 'get',
+		url: '/score/'+userid1,
+		params: {userid: 'poop'}
+	    })
+	    var response = httpMocks.createResponse();
+	    score_controllers.getScore(request, response).then(function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG	
+	    }, function(data){
+     		response._getStatusCode().should.equal(400)		
+		done();
+	    })			    
+	})
+	it('get latest scores', function (done) {
+	    var request  = httpMocks.createRequest({
+		method: 'get',
+		url: '/scores/'+userid1,
+		params: {userid: userid1}
+	    })
+	    var response = httpMocks.createResponse();
+	    score_controllers.getScores(request, response).then(function(data){
+		JSON.parse(response._getData()).result.length.should.equal(2);
+	     	response._getStatusCode().should.equal(200)		
+		done();
+	    }, function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    })			    
+	})
+	it('get latest scores with bad userid', function (done) {
+	    var request  = httpMocks.createRequest({
+		method: 'get',
+		url: '/scores/'+userid1,
+		params: {userid: 'poop'}
+	    })
+	    var response = httpMocks.createResponse();
+	    score_controllers.getScore(request, response).then(function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG	
+	    }, function(data){
+     		response._getStatusCode().should.equal(400)		
+		done();
+	    })			    
+	})
+	it('get latest score for 2 players', function (done) {
+	    var request  = httpMocks.createRequest({
+		method: 'get',
+		url: '/score/'+userid1+'/'+userid2,
+		params: {userid: userid1, userid2: userid2}
+	    })
+	    var response = httpMocks.createResponse();
+	    score_controllers.getScoreForTwoPlayers(request, response).then(function(data){
+     		response._getStatusCode().should.equal(200)		
+		done();
+	    }, function(data){
+		//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG
+	    })			    
+	})
+	it('get latest score for 2 players with bad userid', function (done) {
+	    var request  = httpMocks.createRequest({
+		method: 'get',
+		url: '/scores/'+userid1,
+		params: {userid: 'poop'}
+	    })
+	    var response = httpMocks.createResponse();
+	    score_controllers.getScore(request, response).then(function(data){
+	     	//When you hit this, you will see a timeout error in the results
+		//THIS MEANS SOMETHING WENT WRONG	
+	    }, function(data){
+     		response._getStatusCode().should.equal(400)		
+		done();
+	    })			    
+	})
+    })
+
     describe('adding a score', function () {
 	beforeEach(function(done) {
 	    mockgoose.reset();
 	    done();
 	})
 	it('add valid score', function (done) {
-	    var request  = httpMocks.createRequest({
-		method: 'POST',
-		url: '/score',
-		body: {
-		    seasonOrRound: 'preSeason',
-		    winnerId: '565b7469de0bc8c40a5a62f6',
-		    machinePlayedOnId: '12345',
-		    challenge: false,
-		    scorePlayers: [{
-			playerId: '565b7469de0bc8c40a5a62f6',
-			playerName: 'aiton goldman',
-			wins: 11,
-			losses: 12,
-			points: 123
-		    },{
-			playerId: '565b7469de0bc8c40a5a62f7',
-			playerName: 'aiton goldman2',
-			wins: 12,
-			losses: 13,
-			points: 1234
-		    }]
-		}
-	    });
 	    var response = httpMocks.createResponse();
-	    score_controllers.addScore(request, response).then(function(data){		
+	    score_controllers.addScore(create_good_score_request, response).then(function(data){		
 	     	response._getStatusCode().should.equal(200)		
 	     	done()
 	    },function(data){

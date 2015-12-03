@@ -23,6 +23,8 @@
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
     "serve-favicon": "~2.3.0",
-    "mockgoose": "~5.0.0"
+    "mockgoose": "~5.0.0",
+    "async": "~1.5.0",
+    "mpromise": "~0.5.5"
   }
 }

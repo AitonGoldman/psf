@@ -17,6 +17,8 @@ function report_general_error(type_of_error,error, res){
 module.exports = function(score_type){
     var mongoose = require('mongoose');
     require('../models/ChallengeScore');
+    var mPromise = require('mpromise');
+    var async = require('async')
     var ChallengeScore = mongoose.model('ChallengeScore');
     var ObjectId = require('mongoose').Types.ObjectId; 
     controllers = {};
@@ -39,7 +41,10 @@ module.exports = function(score_type){
 	    getScoreForTwoPlayers: function(req,res,next){
 		var useridobj;
 		var useridobj2;
-
+		if(req.params.userid === undefined || req.params.userid2 === undefined){
+		    req.params.userid='poop';
+		    req.params.userid2='poop';
+		}
 		try {
 		    useridobj = new ObjectId(req.params.userid);
 		    useridobj2 = new ObjectId(req.params.userid2);
@@ -47,28 +52,37 @@ module.exports = function(score_type){
 		    report_general_error("Invalid Parameter","Invalid userid",res)
 		    return Promise.reject({})		    
 		}
-
-	    	return ChallengeScore.find().where('scorePlayers.playerId').in(useridobj).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
-		    if(err){
-			report_general_error("Query Error",err, res) 
-			return false;
+		
+		var promise1;
+		var promise2;
+		var results = {}
+		promise1 = ChallengeScore.find().where('scorePlayers.playerId').in(useridobj).sort('-dateOfScore').limit(1).exec();
+		promise2 = ChallengeScore.find().where('scorePlayers.playerId').in(useridobj2).sort('-dateOfScore').limit(1).exec();
+		promise = new mPromise;
+		promise1.addBack(function(err,data){
+		    results.score1 = data;
+		    if(results.score2){
+			res.json({results:results});
+			promise.fulfill()
 		    }
-		    return ChallengeScore.find().where('scorePlayers.playerId').in(useridobj2).sort('-dateOfScore').limit(1).exec(function(err,latest_score2){
-			if(err){
-			    report_general_error("Query Error",err, res) 
-			    return false;
-			}
-			res.json({result:{score1:latest_score[0],
-					  score2:latest_score2[0]},
-				  error:err});
-			return true
-		    })
 		})
+
+		promise2.addBack(function(err,data){
+		    results.score2 = data;
+		    if(results.score1){
+			res.json({results:results});
+			promise.fulfill()
+		    }
+		})
+		return promise;
 	    },
 	    getScore: function(req,res,next){
 		var useridobj;
+		if(req.params.userid === undefined){
+		    req.params.userid='poop';
+		}
 		try { 
-		    useridobj = new ObjectId(req.params.userid)
+		    useridobj = new ObjectId(req.params.userid)		    
 		} catch(err){
 		    report_general_error("Invalid Parameter","Invalid userid",res)
 		    return Promise.reject({})		    		    
@@ -85,6 +99,9 @@ module.exports = function(score_type){
 	    },
 	    getScores: function(req,res,next){
 		var useridobj;
+		if(req.params.userid === undefined){
+		    req.params.userid='poop';
+		}
 		try { 
 		    useridobj = new ObjectId(req.params.userid)
 		} catch(err){

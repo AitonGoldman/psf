@@ -44,7 +44,6 @@ describe('ChallengeUserLogin Controller', function() {
 		params: {userid: good_user_id}
 	    });	    
 	    user_controllers.updateUserEmail(request, response).then(function(err){		
-		console.log(err);
 	     	response._getStatusCode().should.equal(200);		
 	     	done();
 	    },function(data){

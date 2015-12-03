@@ -20,3 +20,7 @@ echo
 echo
 echo
 curl http://localhost:3000/score/poop/pooping
+echo
+echo
+echo
+curl http://localhost:3000/score/565bafa278a58f282e580AAA
