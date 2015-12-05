@@ -13,31 +13,60 @@ var httpMocks = require('node-mocks-http');
 var score_controllers = require('../routes/score_controllers')('challenge')
 
 describe('ChallengeScore Controller', function() {
+    function gen_create_good_score_request(userid){
+	var create_good_score_request  = httpMocks.createRequest({
+	    method: 'POST',
+	    url: '/score',
+	    body: {
+		seasonOrRound: 'preSeason',
+		winnerId: userid,
+		machinePlayedOnId: '12345',
+		challenge: false,
+		scorePlayers: [{
+		    playerId: userid,
+		    playerName: 'aiton goldman',
+		    wins: 11,
+		    losses: 12,
+		    points: 123
+		},{
+		    playerId: userid,
+		    playerName: 'aiton goldman2',
+		    wins: 12,
+		    losses: 13,
+		    points: 1234
+		}]
+	    }
+	});
+	return create_good_score_request
+    }
+    
+
     var userid1='565b7469de0bc8c40a5a62f6'
     var userid2='565b7469de0bc8c40a5a6fff'
-    var create_good_score_request  = httpMocks.createRequest({
-	method: 'POST',
-	url: '/score',
-	body: {
-	    seasonOrRound: 'preSeason',
-	    winnerId: userid1,
-	    machinePlayedOnId: '12345',
-	    challenge: false,
-	    scorePlayers: [{
-		playerId: userid1,
-		playerName: 'aiton goldman',
-		wins: 11,
-		losses: 12,
-		points: 123
-	    },{
-		playerId: userid2,
-		playerName: 'aiton goldman2',
-		wins: 12,
-		losses: 13,
-		points: 1234
-	    }]
-	}
-    });
+    var create_good_score_request  = gen_create_good_score_request(userid1)
+    // 	httpMocks.createRequest({
+    // 	method: 'POST',
+    // 	url: '/score',
+    // 	body: {
+    // 	    seasonOrRound: 'preSeason',
+    // 	    winnerId: userid1,
+    // 	    machinePlayedOnId: '12345',
+    // 	    challenge: false,
+    // 	    scorePlayers: [{
+    // 		playerId: userid1,
+    // 		playerName: 'aiton goldman',
+    // 		wins: 11,
+    // 		losses: 12,
+    // 		points: 123
+    // 	    },{
+    // 		playerId: userid2,
+    // 		playerName: 'aiton goldman2',
+    // 		wins: 12,
+    // 		losses: 13,
+    // 		points: 1234
+    // 	    }]
+    // 	}
+    // });
 
     describe('getting scores', function () {
     	beforeEach(function(done) {

@@ -11,6 +11,7 @@ require('../models/ChallengeUserLogin');
 var httpMocks = require('node-mocks-http');
 
 var user_controllers = require('../routes/user_controllers')('local')
+var score_controllers = require('../routes/score_controllers')('challenge')
 
 var add_good_user_request  = httpMocks.createRequest({
     method: 'POST',
@@ -24,8 +25,68 @@ var add_good_user_request  = httpMocks.createRequest({
     }
 });
 
+function gen_create_good_score_request(userid){
+    var create_good_score_request  = httpMocks.createRequest({
+	method: 'POST',
+	url: '/score',
+	body: {
+	    seasonOrRound: 'preSeason',
+	    winnerId: userid,
+	    machinePlayedOnId: '12345',
+	    challenge: false,
+	    scorePlayers: [{
+		playerId: userid,
+		playerName: 'aiton goldman',
+		wins: 11,
+		losses: 12,
+		points: 123
+	    },{
+		playerId: userid,
+		playerName: 'aiton goldman2',
+		wins: 12,
+		losses: 13,
+		points: 1234
+	    }]
+	}
+    });
+    return create_good_score_request
+}
+
+
 describe('ChallengeUserLogin Controller', function() {
     var good_user_id;
+    describe('getting user info', function () {
+	beforeEach(function(done) {
+	    //FIXME : doesn't need to be nested
+	    mockgoose.reset();
+	    var response = httpMocks.createResponse();
+	    user_controllers.addUser(add_good_user_request, response).then(function(data){		
+		good_user_id=JSON.parse(response._getData()).result
+		var create_good_score_request  = gen_create_good_score_request(good_user_id)
+		response = httpMocks.createResponse();
+		score_controllers.addScore(create_good_score_request, response).then(function(data){
+		    response = httpMocks.createResponse();
+		    score_controllers.addScore(create_good_score_request, response).then(function(data){
+			done();
+		    })
+		})
+	    })
+	})
+	it('get user info', function (done) {
+	    var response = httpMocks.createResponse();
+	    var request  = httpMocks.createRequest({
+		method: 'GET',
+		url: '/user/'+good_user_id,
+		params: {userid: good_user_id}
+	    });	    
+	    user_controllers.getUserInfo(request, response).then(function(data){		
+		response._getStatusCode().should.equal(200);		
+		JSON.parse(response._getData()).results.user.displayName.should.equal('me_display')
+		JSON.parse(response._getData()).results.score.wins.should.equal(12)
+		done()
+	    })
+	})
+    })
     describe('editing a user', function () {
 	beforeEach(function(done) {
 	    mockgoose.reset();

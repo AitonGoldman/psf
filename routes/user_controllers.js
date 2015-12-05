@@ -1,4 +1,3 @@
-
 function outputValidationError(err){
     error_message = "VALIDATION ERROR WHILE PERFORMING USER OPERATION : "
     for(i in err.errors){
@@ -24,14 +23,30 @@ function report_mongo_error(err, res){
     return false
 }
 
+function get_calculated_score_info(userid_to_check, latest_score_to_check){
+    var calculated_info = {wins:0,losses:0,points:0};
+    var latest_score_player_index;
+    if(latest_score_to_check.length > 0){			
+ 	if(latest_score_to_check[0].scorePlayers[0].playerId == userid_to_check){
+	    latest_score_player_index = 0;
+	} else {
+	    latest_score_player_index = 1;
+	}
+	calculated_info.wins = latest_score_to_check[0].scorePlayers[latest_score_player_index].wins;
+	calculated_info.losses = latest_score_to_check[0].scorePlayers[latest_score_player_index].losses;
+	calculated_info.points = latest_score_to_check[0].scorePlayers[latest_score_player_index].points
+    }
+    return calculated_info;
+}
+
 module.exports = function(login_type){
     var mongoose = require('mongoose');
     require('../models/ChallengeUserLogin');
     require('../models/ChallengeScore');
+    var mPromise = require('mpromise');
     var ChallengeUserLogin = mongoose.model('ChallengeUserLogin');
     var ChallengeScore = mongoose.model('ChallengeScore');    
     var ObjectId = require('mongoose').Types.ObjectId; 
-
 
     controllers = {};
     if(login_type == 'local'){
@@ -101,8 +116,18 @@ module.exports = function(login_type){
 	    getUserInfo: function(req,res,next){
 		//fixme : pull our objectid creation
 		var userid;
+		promise = new mPromise;
+		var promise1;
+		var promise2;
+		var results = {};
 		if(req.params.userid === undefined){
-		    req.params.userid='poop';
+		    if(req.isAuthenticated()){
+			req.params.userid = req.user._id
+		    } else {
+			report_general_error("Invalid Parameter","Invalid userid",res)
+			return Promise.reject({})		    	   
+		    }
+
 		}
 		try{
 		    var userid = new ObjectId(req.params.userid)
@@ -110,42 +135,45 @@ module.exports = function(login_type){
 		    report_general_error("Invalid Parameter","Invalid userid",res)
 		    return Promise.reject({})		    	   
 		}
-		return ChallengeScore.find().where('scorePlayers.playerId').in(userid).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
+		
+		promise1 = ChallengeScore.find().where('scorePlayers.playerId').in(userid).sort('-dateOfScore').limit(1).exec(function(err,latest_score){
 		    if(err){
 			report_general_error("DB error",err,res)
-			return Promise.reject({})
+			return false;
 		    }
-		    
-//		    if(latest_score.length == 0){
-		    
-		    return ChallengeUserLogin.findOne({_id:userid}, function(err,user){
-			var latest_score_player_index = -1;
-			//fixme : need to handle empty results better ( i.e. no matches played yet )
-			if(user == null){
-			    report_general_error("Invalid Parameter","Invalid userid",res)
-			    return false		    	   
-			}
-			plain_user = user.toObject();
-			delete plain_user.local.password;
-			calculated_info = {wins:0,losses:0,points:0};
-			if(latest_score.length > 0){			
-			    if(latest_score[0].scorePlayers[0].playerId == user._id){
-				latest_score_player_index = 0;
-			    } else {
-				latest_score_player_index = 1;
-			    }
-			    calculated_info.wins = latest_score[0].scorePlayers[latest_score_player_index].wins;
-			    calculated_info.losses = latest_score[0].scorePlayers[latest_score_player_index].losses;
-			    calculated_info.points = latest_score[0].scorePlayers[latest_score_player_index].points;
-			}
-			res.json({result:{login_info:plain_user,
-					  calculated_info:calculated_info,
-					  badges:[],
-					  settings:{}
-					 },
-				  error:err})
-		    })
+		    if(latest_score.length > 0){			
+			results.score = get_calculated_score_info(userid, latest_score)
+
+		    } else {
+			results.score = {}
+		    }
 		})
+
+		promise1.addBack(function(err,data){
+		    if(results.user){
+			res.json({results:results});
+			promise.fulfill();
+		    }
+		})
+
+		promise2 = ChallengeUserLogin.find({_id:userid}).exec(function(err, user){
+		    var latest_score_player_index = -1;
+		    //fixme : need to handle empty results better ( i.e. no matches played yet )
+		    if(user == null){
+		     	report_general_error("Invalid Parameter","Invalid userid",res)
+ 			return false		    	   
+		    }
+		    plain_user = user[0].toObject();
+		    delete plain_user.local.password;
+		    results.user = plain_user;
+		});
+		promise2.addBack(function(err,data){
+		    if(results.score){
+			res.json({results:results});
+			promise.fulfill();
+		    }
+		})		
+		return promise;
 	    },
 	    addUser: function(req,res,next){
 		var challengeuserlogin = new ChallengeUserLogin(req.body);

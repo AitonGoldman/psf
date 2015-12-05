@@ -42,8 +42,8 @@ module.exports = function(score_type){
 		var useridobj;
 		var useridobj2;
 		if(req.params.userid === undefined || req.params.userid2 === undefined){
-		    req.params.userid='poop';
-		    req.params.userid2='poop';
+		    report_general_error("Invalid Parameter","Invalid userid",res)
+		    return Promise.reject({})		    
 		}
 		try {
 		    useridobj = new ObjectId(req.params.userid);

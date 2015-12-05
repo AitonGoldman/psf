@@ -51,7 +51,8 @@ These are the logical groupings for models/collections
 
 Todo
 ----
-* add tests for all rest calls
+* add tests for all rest calls - done
+* add negative tests for all rest calls
 * login
 * change scores to allow for challenges
 * get list of challenges

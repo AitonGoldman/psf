@@ -35,6 +35,7 @@ require('./config/passport')(passport);
 
 //include routes
 var routes = require('./routes/index')(app,
+				       passport,
 				       {userLoginType:'local',
 					scoreType:'challenge'
 				       });
